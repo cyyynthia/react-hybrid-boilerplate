@@ -44,8 +44,6 @@ const manifest = require('./dist/manifest.json')
 
 require('http')
   .createServer((req, res) => {
-    res.setHeader('x-powered-by', 'an army of squirrels')
-
     // Assets
     if (req.url.startsWith('/dist/')) {
       const target = req.url.split('/')[2]
