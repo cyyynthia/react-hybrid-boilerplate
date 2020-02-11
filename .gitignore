@@ -1,0 +1,11 @@
+# Editors
+.idea
+*.iml
+/.settings/
+.project
+.classpath
+
+# Project
+node_modules
+*.log
+dist
