@@ -26,7 +26,7 @@
  */
 
 const { resolve } = require('path')
-const { readdirSync, unlinkSync } = require('fs')
+const { existsSync, readdirSync, unlinkSync } = require('fs')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
@@ -35,7 +35,9 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { DefinePlugin, IgnorePlugin } = require('webpack')
 
 // Env vars
-const commitHash = require('child_process').execSync('git rev-parse HEAD').toString().trim()
+const commitHash = null
+try { require('child_process').execSync('git rev-parse HEAD').toString().trim() } catch (e) {}
+
 const isDev = process.env.NODE_ENV === 'development'
 const src = resolve(__dirname, 'src')
 
@@ -140,6 +142,7 @@ const baseConfig = {
   },
   plugins: [
     new ManifestPlugin({
+      writeToFileEmit: true,
       fileName: resolve(__dirname, 'http', 'dist', 'manifest.json')
     }),
     new MiniCSSExtractPlugin({
@@ -148,7 +151,7 @@ const baseConfig = {
     }),
     new DefinePlugin({
       WEBPACK: {
-        GIT_REVISION: JSON.stringify(commitHash)
+        GIT_REVISION: commitHash ? JSON.stringify(commitHash) : 'null'
       },
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     })
@@ -205,41 +208,46 @@ const baseConfig = {
 }
 
 if (isDev) {
-  baseConfig.entry = [ 'react-hot-loader/patch', 'webpack/hot/dev-server', baseConfig.entry ]
+  baseConfig.entry = [ 'react-hot-loader/patch', baseConfig.entry ]
   baseConfig.plugins.push(new FriendlyErrorsWebpackPlugin())
   module.exports = baseConfig
 } else {
   baseConfig.plugins.push({
     apply: (compiler) =>
       compiler.hooks.compile.tap('cleanBuild', () => {
-        for (const filename of readdirSync(compiler.options.output.path)) {
-          if (filename !== 'manifest.json') {
-            unlinkSync(resolve(compiler.options.output.path, filename))
+        if (existsSync(compiler.options.output.path)) {
+          for (const filename of readdirSync(compiler.options.output.path)) {
+            if (filename !== 'manifest.json') {
+              unlinkSync(resolve(compiler.options.output.path, filename))
+            }
           }
         }
       })
   })
 
-  const nodeCfg = Object.assign({}, baseConfig)
-  // Prevent nested structs from being refs
-  nodeCfg.plugins = [ ...nodeCfg.plugins ]
-  nodeCfg.output = Object.assign({}, nodeCfg.output)
-  nodeCfg.optimization = Object.assign({}, nodeCfg.optimization)
-
-  // Actual edits
-  nodeCfg.entry = resolve(src, 'components', 'App.jsx')
-  nodeCfg.optimization.minimize = false
-  nodeCfg.output.filename = 'App.js'
-  nodeCfg.output.chunkFilename = '[name].chk.js'
-  nodeCfg.output.libraryTarget = 'commonjs2'
-  nodeCfg.output.path = resolve(__dirname, 'http', 'dist')
-  nodeCfg.plugins = nodeCfg.plugins.slice(1)
-  nodeCfg.plugins.push(new IgnorePlugin(/\.(s?css|png|jpe?g|gif|svg|mp4|webm|woff2?|eot|ttf|otf|wav)$/))
-  nodeCfg.target = 'node'
-  nodeCfg.externals = [ require('webpack-node-externals')() ]
-  nodeCfg.node = {
-    __dirname: false,
-    __filename: false
+  const nodeCfg = {
+    ...baseConfig,
+    entry: resolve(src, 'components', 'App.jsx'),
+    output: {
+      filename: 'App.js',
+      chunkFilename: '[name].chk.js',
+      libraryTarget: 'commonjs2',
+      path: resolve(__dirname, 'http', 'dist')
+    },
+    plugins: [
+      ...baseConfig.plugins.slice(1),
+      new IgnorePlugin(/\.(?!js(x|on)?$)/) // maybe consider making a better regex
+    ],
+    optimization: {
+      ...baseConfig.optimization,
+      minimize: false
+    },
+    target: 'node',
+    externals: [ require('webpack-node-externals')() ],
+    node: {
+      __dirname: false,
+      __filename: false
+    }
   }
 
   module.exports = [ baseConfig, nodeCfg ]
