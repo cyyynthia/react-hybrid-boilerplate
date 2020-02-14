@@ -46,7 +46,5 @@ You can change the port by setting the PORT env variable.
 ## Things I consider adding in the future
  - TypeScript support
  - Redux support
- - Reduce the shitcode from 67% to 34%
- - Add gzipping
- - Something to easily configure the boilerplate w/o having to edit stuff (cli args? env vars?)
+ - Something to easily configure the boilerplate w/o having to edit stuff (cli args? env vars? install script?)
  - Markdown support (Export as React component)

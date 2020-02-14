@@ -32,7 +32,7 @@ const ManifestPlugin = require('webpack-manifest-plugin')
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const { DefinePlugin, IgnorePlugin } = require('webpack')
+const { DefinePlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
 
 // Env vars
 const commitHash = null
@@ -98,6 +98,10 @@ const baseConfig = {
               modules: { localIdentName: '[local]-[hash:7]' }
             }
           },
+          {
+            loader: 'postcss-loader',
+            options: { plugins: [ require('autoprefixer') ] }
+          },
           'sass-loader'
         ]
       },
@@ -151,7 +155,7 @@ const baseConfig = {
     }),
     new DefinePlugin({
       WEBPACK: {
-        GIT_REVISION: commitHash ? JSON.stringify(commitHash) : 'null'
+        GIT_REVISION: JSON.stringify(commitHash)
       },
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     })
@@ -160,19 +164,6 @@ const baseConfig = {
     minimize: !isDev,
     minimizer: [
       new TerserJSPlugin({
-        terserOptions: {
-          parse: { ecma: 8 },
-          compress: {
-            ecma: 5,
-            warnings: false,
-            inline: 2
-          },
-          output: {
-            ecma: 5,
-            comments: false,
-            ascii_only: true
-          }
-        },
         extractComments: false,
         parallel: true,
         cache: true
@@ -202,7 +193,7 @@ const baseConfig = {
   devServer: {
     quiet: true,
     historyApiFallback: true,
-    allowedHosts: [ 'localhost', '.ngrok.io' ],
+    allowedHosts: [ 'localhost', '.ngrok.io' ], // Learn more about ngrok here: https://ngrok.com/
     proxy: { '/': `http://localhost:${process.env.PORT || 6969}` }
   }
 }
@@ -236,7 +227,7 @@ if (isDev) {
     },
     plugins: [
       ...baseConfig.plugins.slice(1),
-      new IgnorePlugin(/\.(?!js(x|on)?$)/) // maybe consider making a better regex
+      new LimitChunkCountPlugin({ maxChunks: 1 })
     ],
     optimization: {
       ...baseConfig.optimization,
