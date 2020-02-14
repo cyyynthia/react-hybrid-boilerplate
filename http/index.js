@@ -92,6 +92,7 @@ const renderHtml = (helmet, html) => `
     </head>
     <body ${helmet ? helmet.bodyAttributes.toString() : ''}>
       <div id='react-root'>${html || ''}</div>
+      <div id='tooltip-container'></div>
       <script>window.GLOBAL_ENV = { PRODUCTION: ${process.argv.includes('-p')} }</script>
       <script src='${manifest['main.js']}'></script>
       ${manifest['styles.js'] ? `<script src='${manifest['styles.js']}'></script>` : ''}
