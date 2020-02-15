@@ -106,7 +106,7 @@ const baseConfig = {
         ]
       },
       {
-        test: /\.(svg|mp4|webm|woff2?|eot|ttf|otf|wav)$/,
+        test: /\.(svg|mp4|webm|woff2?|eot|ttf|otf|wav|ico)$/,
         use: [
           {
             loader: 'file-loader',
@@ -223,7 +223,8 @@ if (isDev) {
       filename: 'App.js',
       chunkFilename: '[name].chk.js',
       libraryTarget: 'commonjs2',
-      path: resolve(__dirname, 'http', 'dist')
+      path: resolve(__dirname, 'http', 'dist'),
+      publicPath: '/dist/'
     },
     plugins: [
       ...baseConfig.plugins.slice(1),

@@ -32,11 +32,12 @@ import { BrowserRouter as Router } from 'react-router-dom'
 
 import App from './components/App'
 
-// Configure
+// Configure - @todo: get rid of that dep
 Tooltip.defaultProps = {
   ...Tooltip.defaultProps,
   mouseLeaveDelay: 0,
   prefixCls: 'tooltip',
+  destroyTooltipOnHide: true,
   getTooltipContainer: () => document.querySelector('#tooltip-container')
 }
 
@@ -45,7 +46,7 @@ if (process.env.NODE_ENV === 'production') {
   ReactDOM.hydrate(<Router><App/></Router>, document.querySelector('#react-root'))
 } else {
   const { AppContainer: A } = require('react-hot-loader')
-  const render = C => ReactDOM.render(<A><C/></A>, document.querySelector('#react-root'))
+  const render = C => ReactDOM.render(<A><Router><C/></Router></A>, document.querySelector('#react-root'))
 
   // Render & HMR
   if (module.hot) module.hot.accept('./components/App', () => render(App))
