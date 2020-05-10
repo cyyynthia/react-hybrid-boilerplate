@@ -28,9 +28,9 @@
 import React from 'react'
 import style from './App.scss'
 
-const App = React.memo(
-  () => <div className={style.weClicked} onClick={() => console.log('we clicked!')}>Henlo from React</div>
+const App = () => (
+  <div className={style.weClicked} onClick={() => console.log('we clicked!')}>Henlo from React</div>
 )
 
 App.displayName = 'App'
-export default App
+export default React.memo(App)

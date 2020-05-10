@@ -27,7 +27,7 @@
 
 // Node
 const { existsSync, createReadStream } = require('fs')
-const { resolve } = require('path')
+const { join } = require('path')
 const mime = require('mime-types')
 
 // React
@@ -47,12 +47,15 @@ require('http')
     // Assets
     if (req.url.startsWith('/dist/')) {
       const target = req.url.split('/')[2]
-      const file = resolve(__dirname, '..', 'dist', target)
+      const file = join(__dirname, '..', 'dist', target)
       if (existsSync(file) && target && target !== '.' && target !== '..') {
         res.setHeader('content-type', mime.lookup(file) || 'application/octet-stream')
         return createReadStream(file).pipe(res)
       }
     }
+
+    // Robots Exclusion Protocol
+    if (req.url.match(/^\/robots\.txt(?:[#?].*)?$/)) return createReadStream(join(__dirname, 'robots.txt')).pipe(res)
 
     // Just return empty html while developing
     if (process.argv.includes('-d')) return res.end(renderHtml())

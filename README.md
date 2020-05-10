@@ -13,11 +13,9 @@ application usable by users who disabled JavaScript.
 ## Features
  - No expressjs: It uses Node's http module to create the web server, and not bloated stuff;
  - Hot reload: It is capable of hot reloading while developing;
- - [react-helmet](https://github.com/nfl/react-helmet), [react-router](https://github.com/ReactTraining/react-router)
-and [rc-tooltip](https://github.com/react-component/tooltip) are ready to be used, no extra-setup required;
+ - [react-helmet](https://github.com/nfl/react-helmet) and [react-router](https://github.com/ReactTraining/react-router)
+are ready to be used, no extra-setup required;
  - Image minification with [imagemin](https://github.com/imagemin/imagemin) in production builds;
- - Pre-configured eslint; Please do not hate on my config if you don't like it, and just change it on your own;
-    - Based on [standard](https://github.com/standard/standard) with some tweaking and rules for React
 
 There are also some env variables that get injected in your application through webpack's `DefinePlugin`:
  - `WEBPACK.GIT_REVISION` - Git revision; null if git isn't present.
