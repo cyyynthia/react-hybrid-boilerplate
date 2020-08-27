@@ -26,7 +26,7 @@
  */
 
 import React from 'react'
-import style from './App.scss'
+import style from '@styles/app.scss'
 
 const App = () => (
   <div className={style.weClicked} onClick={() => console.log('we clicked!')}>Henlo from React</div>

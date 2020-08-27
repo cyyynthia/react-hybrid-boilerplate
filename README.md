@@ -1,4 +1,5 @@
 # React Hybrid Boilerplate
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G71TSDF)<br>
 [![License](https://img.shields.io/github/license/Bowser65/react-hybrid-boilerplate.svg?style=flat-square)](https://github.com/Bowser65/react-hybrid-boilerplate/blob/master/LICENSE)
 [![Discord](https://img.shields.io/badge/chat-on%20Discord-7289DA.svg?style=flat-square)](https://discord.gg/DXKgqrP)
 
@@ -26,6 +27,12 @@ You're of course able to edit the configuration to your needs.
 them by looking at `webpack.config.js` line 90.
 
 ## How to use
+### Aliases
+ - `@components/*`: src/components/*
+ - `@styles/*`: src/styles/*
+ - `@assets/*`: src/assets/*
+
+## How to run
 **Note**: This boilerplate uses [pnpm](https://github.com/pnpm/pnpm) for dependency management.
 
 ### Development
@@ -39,7 +46,7 @@ Then, open http://localhost:8080 in your web browser and start tinkering!
  - Build the app: `pnpm run build`
  - And then start the http server! `pnpm run start`
 
-You can change the port by setting the PORT env variable.
+You can change the port by setting the PORT env variable. By default, it'll listen on http://localhost:6969.
 
 ## Things I consider adding in the future
  - TypeScript support

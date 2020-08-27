@@ -36,8 +36,8 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const { DefinePlugin, optimize: { LimitChunkCountPlugin } } = require('webpack')
 
 // Env vars
-const commitHash = null
-try { require('child_process').execSync('git rev-parse HEAD').toString().trim() } catch (e) {}
+let commitHash = null
+try { commitHash = require('child_process').execSync('git rev-parse HEAD').toString().trim() } catch (e) {}
 
 const isDev = process.env.NODE_ENV === 'development'
 const src = resolve(__dirname, 'src')
@@ -52,7 +52,12 @@ const baseConfig = {
     publicPath: '/dist/'
   },
   resolve: {
-    extensions: [ '.js', '.jsx' ]
+    extensions: [ '.js', '.jsx' ],
+    alias: {
+      '@components': resolve(__dirname, 'src', 'components'),
+      '@styles': resolve(__dirname, 'src', 'styles'),
+      '@assets': resolve(__dirname, 'src', 'assets')
+    }
   },
   module: {
     strictExportPresence: true,
@@ -89,8 +94,10 @@ const baseConfig = {
           {
             loader: 'css-loader',
             options: {
-              localsConvention: 'camelCaseOnly',
-              modules: { localIdentName: '[local]-[hash:7]' }
+              modules: {
+                exportLocalsConvention: 'camelCaseOnly',
+                localIdentName: '[local]-[hash:7]'
+              }
             }
           },
           {
